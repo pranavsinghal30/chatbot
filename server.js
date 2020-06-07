@@ -59,6 +59,7 @@ function handleMessage(sender_psid, received_message) {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
     }*/
     text = getNextQuestion(current)
+    console.log("inside recieved text message"+text);
     response = {"text":text};
   }   else if (received_message.attachments) {
   
