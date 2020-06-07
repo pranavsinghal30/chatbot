@@ -6,6 +6,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express().use(bodyParser.json());
 const request = require('request');
+const MongoClient = require('mongodb').MongoClient
 // Certificate
 const privateKey = fs.readFileSync('/etc/letsencrypt/live/byer.gyanamite.com/privkey.pem', 'utf8');
 const certificate = fs.readFileSync('/etc/letsencrypt/live/byer.gyanamite.com/cert.pem', 'utf8');
@@ -26,14 +27,38 @@ const credentials = {
 function handleMessage(sender_psid, received_message) {
 
   let response;
+  
+
+  function getNextQuestion(current) {
+    //let message = req.query.message || req.body.message || 'Hello World!';
+    //res.status(200).send(message);
+    const client = new MongoClient("mongodb+srv://sumukh1996:Dexler%401234@cluster0-et4eg.gcp.mongodb.net/test?retryWrites=true&w=majority",{useNewUrlParser: true});
+
+    client.connect(err => {
+        const collection = client.db("chatbot").collection("qna");
+        collection.find({})
+        .sort({"order": 1})
+        .limit(8)
+        .toArray((err, result) => {
+            if(err){
+                
+            }
+            if(result !== null){   
+              return result;       
+
+            }
+        });   
+  });} 
 
   // Check if the message contains text
-  if (received_message.text) {    
+  if (received_message.text) {  
+    current =1;  
 
     // Create the payload for a basic text message
-    response = {
+    /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
-    }
+    }*/
+    response = {getNextQuestion(current)}
   }   else if (received_message.attachments) {
   
     // Gets the URL of the message attachment
