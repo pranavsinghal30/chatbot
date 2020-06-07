@@ -21,11 +21,12 @@ const credentials = {
 //app.use((req, res) => {
 //	res.send('Hello there !');
 //});
+let text;
 function getNextQuestion(current) {
   //let message = req.query.message || req.body.message || 'Hello World!';
   //res.status(200).send(message);
   const client = new MongoClient("mongodb+srv://sumukh1996:Dexler%401234@cluster0-et4eg.gcp.mongodb.net/test?retryWrites=true&w=majority",{useNewUrlParser: true});
-
+  return new Promise((resolve,reject) =>{
   client.connect(err => {
       const collection = client.db("chatbot").collection("qna");
       collection.find({})
@@ -34,21 +35,25 @@ function getNextQuestion(current) {
       .toArray((err, result) => {
           if(err){
              console.log("error"+err) 
+             reject();
           }
-          if(result !== null){   
-	    console.log("result"+result);
-            return result;       
+          if(result !== null){  
+            text = result; 
+            console.log("result"+result[0].order); 
+            resolve();
 
           }
       });   
-});}
+});
+});
+}
 
 
 // Handles messages events
-function handleMessage(sender_psid, received_message) {
+async function handleMessage(sender_psid, received_message) {
 
   let response;
-  console.log("handle message"+received_message.text);
+  await console.log("handle message"+received_message.text);
   
    
 
@@ -59,10 +64,11 @@ function handleMessage(sender_psid, received_message) {
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
     }*/
-    text = getNextQuestion(current)
+    res = await getNextQuestion(current).catch(()=>{console.log("error")})
     //text = "hi"
-    console.log("inside recieved text message"+text);
-    response = {"text":text};
+    await console.log("inside recieved text message waited"+Text);
+    response = await {"text":text};
+    await callSendAPI(sender_psid, response);
   }   
   else if (received_message.attachments) {
   
@@ -76,7 +82,7 @@ function handleMessage(sender_psid, received_message) {
   	
   
   // Sends the response message
-  callSendAPI(sender_psid, response);
+  
 }
 
 // Handles messaging_postbacks events
