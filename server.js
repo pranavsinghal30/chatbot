@@ -47,7 +47,7 @@ function getNextQuestion(current) {
 function handleMessage(sender_psid, received_message) {
 
   let response;
-  
+  console.log("handle message"+received_message.text);
   
    
 
@@ -58,13 +58,14 @@ function handleMessage(sender_psid, received_message) {
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
     }*/
-    text = getNextQuestion(current)
+    //text = getNextQuestion(current)
     console.log("inside recieved text message"+text);
     response = {"text":text};
-  }   else if (received_message.attachments) {
+  }   
+  else if (received_message.attachments) {
   
     // Gets the URL of the message attachment
-    text = getNextQuestion(current)
+    //text = getNextQuestion(current)
     console.log("inside recieved text message"+text);
     let attachment_url = received_message.attachments[0].payload.url;
   
