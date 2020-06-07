@@ -58,7 +58,8 @@ function handleMessage(sender_psid, received_message) {
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
     }*/
-    //text = getNextQuestion(current)
+    text = getNextQuestion(current)
+    //text = "hi"
     console.log("inside recieved text message"+text);
     response = {"text":text};
   }   
@@ -66,6 +67,7 @@ function handleMessage(sender_psid, received_message) {
   
     // Gets the URL of the message attachment
     //text = getNextQuestion(current)
+    text = "hi"
     console.log("inside recieved text message"+text);
     let attachment_url = received_message.attachments[0].payload.url;
   
