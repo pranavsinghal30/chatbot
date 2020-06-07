@@ -33,9 +33,10 @@ function getNextQuestion(current) {
       .limit(8)
       .toArray((err, result) => {
           if(err){
-              
+             console.log("error"+err) 
           }
           if(result !== null){   
+	    console.log("result"+result);
             return result;       
 
           }
@@ -58,7 +59,8 @@ function handleMessage(sender_psid, received_message) {
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
     }*/
-    //text = getNextQuestion(current)
+    text = getNextQuestion(current)
+    //text = "hi"
     console.log("inside recieved text message"+text);
     response = {"text":text};
   }   
