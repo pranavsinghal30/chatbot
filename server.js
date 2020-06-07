@@ -64,6 +64,8 @@ function handleMessage(sender_psid, received_message) {
   }   else if (received_message.attachments) {
   
     // Gets the URL of the message attachment
+    text = getNextQuestion(current)
+    console.log("inside recieved text message"+text);
     let attachment_url = received_message.attachments[0].payload.url;
   
   } 
