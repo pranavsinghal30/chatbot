@@ -33,9 +33,10 @@ function getNextQuestion(current) {
       .limit(8)
       .toArray((err, result) => {
           if(err){
-              
+             console.log("error"+err) 
           }
           if(result !== null){   
+	    console.log("result"+result);
             return result;       
 
           }
