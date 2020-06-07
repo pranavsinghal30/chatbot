@@ -21,6 +21,26 @@ const credentials = {
 //app.use((req, res) => {
 //	res.send('Hello there !');
 //});
+function getNextQuestion(current) {
+  //let message = req.query.message || req.body.message || 'Hello World!';
+  //res.status(200).send(message);
+  const client = new MongoClient("mongodb+srv://sumukh1996:Dexler%401234@cluster0-et4eg.gcp.mongodb.net/test?retryWrites=true&w=majority",{useNewUrlParser: true});
+
+  client.connect(err => {
+      const collection = client.db("chatbot").collection("qna");
+      collection.find({})
+      .sort({"order": 1})
+      .limit(8)
+      .toArray((err, result) => {
+          if(err){
+              
+          }
+          if(result !== null){   
+            return result;       
+
+          }
+      });   
+});}
 
 
 // Handles messages events
@@ -28,37 +48,18 @@ function handleMessage(sender_psid, received_message) {
 
   let response;
   
-
-  function getNextQuestion(current) {
-    //let message = req.query.message || req.body.message || 'Hello World!';
-    //res.status(200).send(message);
-    const client = new MongoClient("mongodb+srv://sumukh1996:Dexler%401234@cluster0-et4eg.gcp.mongodb.net/test?retryWrites=true&w=majority",{useNewUrlParser: true});
-
-    client.connect(err => {
-        const collection = client.db("chatbot").collection("qna");
-        collection.find({})
-        .sort({"order": 1})
-        .limit(8)
-        .toArray((err, result) => {
-            if(err){
-                
-            }
-            if(result !== null){   
-              return result;       
-
-            }
-        });   
-  });} 
+  
+   
 
   // Check if the message contains text
   if (received_message.text) {  
-    current =1;  
-
+    current = 1;
     // Create the payload for a basic text message
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
     }*/
-    response = {getNextQuestion(current)}
+    text = getNextQuestion(current)
+    response = {"text":text};
   }   else if (received_message.attachments) {
   
     // Gets the URL of the message attachment
