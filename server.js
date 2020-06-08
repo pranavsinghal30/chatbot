@@ -23,6 +23,7 @@ const credentials = {
 //});
 let text;
 var current = 1;
+var qora = 0;
 function getNextQuestion(current) {
   //let message = req.query.message || req.body.message || 'Hello World!';
   //res.status(200).send(message);
@@ -30,15 +31,16 @@ function getNextQuestion(current) {
   return new Promise((resolve,reject) =>{
   client.connect(err => {
       const collection = client.db("chatbot").collection("qna");
-      collection.find({"order":{$gt:current}})
+      collection.find({})
       .sort({"order": 1})
+      .skip(current)
       .limit(1)
       .toArray((err, result) => {
           if(err){
              console.log("error"+err) 
              reject();
           }
-          if(result !== null){  
+          if(result !== null && result !== undefined){  
             text = result; 
             console.log("result"+result[0].order); 
             resolve();
@@ -64,12 +66,27 @@ async function handleMessage(sender_psid, received_message) {
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
     }*/
+    
+    if ( qora == 0)
+    {
     res = await getNextQuestion(current).catch(()=>{console.log("error")})
-    //text = "hi"
     await console.log("inside recieved text message waited"+text[0].question);
     response = await {"text":text[0].question};
     await callSendAPI(sender_psid, response);
-    current += 1;
+    qora = await 1;
+    }
+    else if (qora == 1)
+    {
+      res = await getNextQuestion(current).catch(()=>{console.log("error")})
+      await console.log("inside recieved text message waited"+text[0].answer);
+      response = await {"text":"The expected answer was:"};
+      await callSendAPI(sender_psid, response);
+      response = await {"text":text[0].answer};
+      await callSendAPI(sender_psid, response);
+      qora = await 0;
+      current += await 1;
+    }
+    
   }   
   else if (received_message.attachments) {
   
