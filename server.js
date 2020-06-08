@@ -22,6 +22,7 @@ const credentials = {
 //	res.send('Hello there !');
 //});
 let text;
+var current = 1;
 function getNextQuestion(current) {
   //let message = req.query.message || req.body.message || 'Hello World!';
   //res.status(200).send(message);
@@ -29,9 +30,9 @@ function getNextQuestion(current) {
   return new Promise((resolve,reject) =>{
   client.connect(err => {
       const collection = client.db("chatbot").collection("qna");
-      collection.find({})
+      collection.find({"order":{$gt:current}})
       .sort({"order": 1})
-      .limit(8)
+      .limit(1)
       .toArray((err, result) => {
           if(err){
              console.log("error"+err) 
@@ -59,16 +60,16 @@ async function handleMessage(sender_psid, received_message) {
 
   // Check if the message contains text
   if (received_message.text) {  
-    current = 1;
     // Create the payload for a basic text message
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
     }*/
     res = await getNextQuestion(current).catch(()=>{console.log("error")})
     //text = "hi"
-    await console.log("inside recieved text message waited"+Text);
-    response = await {"text":text};
+    await console.log("inside recieved text message waited"+text[0].question);
+    response = await {"text":text[0].question};
     await callSendAPI(sender_psid, response);
+    current += 1;
   }   
   else if (received_message.attachments) {
   
