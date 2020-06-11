@@ -22,7 +22,7 @@ const credentials = {
 //	res.send('Hello there !');
 //});
 let text;
-var current = 0;
+var current = 1;
 var qora = 0;
 function getNextQuestion(current) {
   //let message = req.query.message || req.body.message || 'Hello World!';
@@ -56,12 +56,12 @@ function getNextQuestion(current) {
 async function handleMessage(sender_psid, received_message) {
 
   let response;
-  await console.log("handle message "+received_message.text+" "+received_message.is_echo);
+  await console.log("handle message"+received_message.text+);
   
    
 
   // Check if the message contains text
-  if (received_message.text && received_message.is_echo == undefined) {  
+  if (received_message.text && received_message.is_echo) {  
     // Create the payload for a basic text message
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
@@ -85,7 +85,6 @@ async function handleMessage(sender_psid, received_message) {
       await callSendAPI(sender_psid, response);
       qora = await 0;
       current += await 1;
-      current = await current % 4;
     }
     
   }   
@@ -120,23 +119,19 @@ function callSendAPI(sender_psid, response) {
   }
 
  // Send the HTTP request to the Messenger Platform
-  return new Promise((resolve,reject)=>{
   request({
     "uri": "https://graph.facebook.com/v2.6/me/messages",
     "qs": { "access_token":"EAAIqRIa1ZCdkBACGF9Q9z3HYUn8JvQVqDkhQAzgsO8C18u9jJDWo7eZAfU7yU0JIQeMgZCKXJ6QmCJurrs2uve2dbnIXSMyyqSt1gh8fN7oZAItHn6h5O97hyFiUI223jnlU9hNSZBcyExNuaJocZB7O1Gdjn7xHZAt4MZBsSBWgVgZDZD" },
     "method": "POST",
     "json": request_body
-     }, (err, res, body) => {
+  }, (err, res, body) => {
     if (!err) {
 	// res.status(200).send("success");
       console.log('message sent!')
-      resolve();
     } else {
       console.error("Unable to send message:" + err);
-      reject();
     }
   });
-});
   
 }
 app.post('/webhook', (req, res) => {
