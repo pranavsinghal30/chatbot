@@ -24,6 +24,8 @@ const credentials = {
 let text;
 var current = 1;
 var qora = 0;
+var limit = 0;
+var slno = 0;
 function getNextQuestion(current) {
   //let message = req.query.message || req.body.message || 'Hello World!';
   //res.status(200).send(message);
@@ -61,7 +63,7 @@ async function handleMessage(sender_psid, received_message) {
    
 
   // Check if the message contains text
-  if (received_message.text) {  
+  if (received_message.text ) {  
     // Create the payload for a basic text message
     /*response = {
       "text": ` You sent the message: " ${received_message.text}". Now send me an image!`
@@ -69,22 +71,49 @@ async function handleMessage(sender_psid, received_message) {
     
     if ( qora == 0)
     {
-    res = await getNextQuestion(current).catch(()=>{console.log("error")})
-    await console.log("inside recieved text message waited"+text[0].question);
-    response = await {"text":text[0].question};
-    await callSendAPI(sender_psid, response);
-    qora = await 1;
-    }
-    else if (qora == 1)
-    {
       res = await getNextQuestion(current).catch(()=>{console.log("error")})
-      await console.log("inside recieved text message waited"+text[0].answer);
+      await console.log("inside recieved text message waited"+text[0].context[0]);
+      limit = await text[0].questions.size();
+      var cont_len = text[0].context.size();
+      if (cont_len >0){
+      response = await {"text":text[0].context[0]};
+      await callSendAPI(sender_psid, response);}
+      if (cont_len >1){
+        response = await {"text":text[0].context[1]};
+        await callSendAPI(sender_psid, response);}
+      if (cont_len >2){
+        response = await {"text":text[0].context[2]};
+        await callSendAPI(sender_psid, response);}
+      if (cont_len >3){
+        response = await {"text":text[0].context[3]};
+        await callSendAPI(sender_psid, response);}
+
+      qora = await 1;
+    }
+    else if(qora ==1)
+    {
+      await console.log("inside recieved text message waited"+text[0].answers[0]);
+      response = await {"text":text[0].questions[slno]};
+      await callSendAPI(sender_psid,response);
+      qora = 2;
+    }
+    else if (qora == 2)
+    {
+      //res = await getNextQuestion(current).catch(()=>{console.log("error")})
+      await console.log("inside recieved text message waited"+text[0].answers[0]);
       response = await {"text":"The expected answer was:"};
       await callSendAPI(sender_psid, response);
-      response = await {"text":text[0].answer};
+      response = await {"text":text[0].answer[slno]};
       await callSendAPI(sender_psid, response);
-      qora = await 0;
-      current += await 1;
+      slno+= await 1;
+      if(slno == limit)
+      {
+        qora = await 0;
+        current += await 1;
+      }
+      else{
+        qora = await 1;
+      }
     }
     
   }   
