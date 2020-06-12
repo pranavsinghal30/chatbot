@@ -22,8 +22,10 @@ const credentials = {
 //	res.send('Hello there !');
 //});
 let text;
-var current = 0;
+var current = 1;
 var qora = 0;
+var limit = 0;
+var slno = 0;
 function getNextQuestion(current) {
   //let message = req.query.message || req.body.message || 'Hello World!';
   //res.status(200).send(message);
@@ -69,23 +71,51 @@ async function handleMessage(sender_psid, received_message) {
     
     if ( qora == 0)
     {
-    res = await getNextQuestion(current).catch(()=>{console.log("error")})
-    await console.log("inside recieved text message waited"+text[0].question);
-    response = await {"text":text[0].question};
-    await callSendAPI(sender_psid, response);
-    qora = await 1;
-    }
-    else if (qora == 1)
-    {
       res = await getNextQuestion(current).catch(()=>{console.log("error")})
-      await console.log("inside recieved text message waited"+text[0].answer);
+      await console.log("inside recieved text message qora =0"+text[0].questions.length);
+      limit = await text[0].questions.length;
+      var cont_len = await text[0].context.length;
+      if (cont_len >0){
+      response = await {"text":text[0].context[0]};
+      await callSendAPI(sender_psid, response);}
+      if (cont_len >1){
+        response = await {"text":text[0].context[1]};
+        await callSendAPI(sender_psid, response);}
+      if (cont_len >2){
+        response = await {"text":text[0].context[2]};
+        await callSendAPI(sender_psid, response);}
+      if (cont_len >3){
+        response = await {"text":text[0].context[3]};
+        await callSendAPI(sender_psid, response);}
+
+      qora = await 1;
+    }
+    else if(qora ==1)
+    {
+      await console.log("inside recieved text message waited"+text[0].answers[0]);
+      response = await {"text":text[0].questions[slno]};
+      await callSendAPI(sender_psid,response);
+      qora = 2;
+    }
+    else if (qora == 2)
+    {
+      //res = await getNextQuestion(current).catch(()=>{console.log("error")})
+      await console.log("inside recieved text message waited"+text[0].answers[slno]);
       response = await {"text":"The expected answer was:"};
       await callSendAPI(sender_psid, response);
-      response = await {"text":text[0].answer};
+      response = await {"text":text[0].answers[slno]};
+      console.log("waited for first message to be sent in the answer part");
       await callSendAPI(sender_psid, response);
-      qora = await 0;
-      current += await 1;
-      current = await current % 4;
+      slno+= await 1;
+      if(slno == limit)
+      {
+        qora = await 0;
+        current += await 1;
+      }
+      else{
+	console.log("inside else condition of answer")
+        qora = await 1;
+      }
     }
     
   }   
